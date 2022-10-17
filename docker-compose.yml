@@ -1,0 +1,48 @@
+services:
+  laravel:
+    build:
+      context: ./docker/app
+      dockerfile: Dockerfile
+    image: sysopsas3/app:latest
+    networks: 
+      - sysops
+
+    volumes: 
+      - ./laravel/:/var/www/html
+
+    ports: 
+      - 8080:80
+
+    working_dir: 
+  redis:
+    image: redis:alpine
+    networks: 
+      - sysops
+
+    volumes: 
+      - redisdata:/data
+
+  mysqldb:
+    image: mysql:8.0.30
+    environment:
+      MYSQL_ROOT_PASSWORD: somerandomrootpassword
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laraveluser
+      MYSQL_PASSWORD: somerandompassword
+    ports: 
+      - 33060:3306
+
+    networks: 
+      - sysops
+
+    volumes: 
+      - mysqldbdata:/var/lib/mysql
+
+networks: 
+  sysops:
+    driver: bridge
+volumes:
+  mysqldbdata:
+    driver: local
+  redisdata:
+    driver: local
